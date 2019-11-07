@@ -56,7 +56,7 @@ public class Persons {
      */
 
 
-public JSONObject listCountries(){
+public JSONObject listPersons(){
    
         Connection con=null;
         Statement stmt=null;
@@ -117,7 +117,7 @@ public JSONObject listCountries(){
     @Produces("application/json")
         public String getListCountries() {   
         JSONObject mainobject=new JSONObject();
-        mainobject=listCountries();
+        mainobject=listPersons();
         return mainobject.toString();
     }
 }
