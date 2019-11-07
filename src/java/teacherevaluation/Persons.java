@@ -54,12 +54,7 @@ public class Persons {
      * Retrieves representation of an instance of teacherevaluation.GenericResource
      * @return an instance of java.lang.String
      */
-    @GET
-    @Produces("text/plain")
-    public String getText() {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
-    }
+
 
 public JSONObject listCountries(){
    
@@ -104,11 +99,8 @@ public JSONObject listCountries(){
                     jsonArray.add(jsonObject);
                     jsonObject.clear();
                 }while(result.next());
-                mainObject1.accumulate("Details of Countries: ", jsonArray);
+                mainObject1.accumulate("Details of Perosns: ", jsonArray);
                 }  
-             
-             
-             
              stmt.close();
              con.close();
 
@@ -122,7 +114,7 @@ public JSONObject listCountries(){
     
     @GET
      @Path("personslist")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces("application/json")
         public String getListCountries() {   
         JSONObject mainobject=new JSONObject();
         mainobject=listCountries();
