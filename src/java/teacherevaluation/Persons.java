@@ -47,77 +47,58 @@ public class Persons {
     /**
      * Creates a new instance of GenericResource
      */
-    public Persons() {
-    }
-
-    /**
-     * Retrieves representation of an instance of teacherevaluation.GenericResource
-     * @return an instance of java.lang.String
-     */
-
-
-public JSONObject listPersons(){
+    
+@GET
+    @Path("updateStudent&{email}&{phone}&{address}&{postal}&{id}")
+    @Produces("text/plain")
+public String udatePersos(@PathParam("email") String email,
+        @PathParam("phone") String phone,
+        @PathParam("address") String address,
+        @PathParam("postal") String postal,
+        @PathParam("pid") int pid){
    
         Connection con=null;
-        Statement stmt=null;
+       PreparedStatement stm=null;
         JSONObject mainObject1=new JSONObject();
-        JSONObject jsonObject=new JSONObject();
         String status=null;
-       
+        int result = 0;
         
         try{
             DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
             con=DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
            
-            String sql="select * from persons";
-            stmt=con.createStatement();
-            ResultSet result=stmt.executeQuery(sql);
-            JSONArray jsonArray=new JSONArray();
+            String sql="update persons set email= ?, phone=?, address=?,postal=? where pid=?";
+            stm=con.prepareStatement(sql);
+             stm.setString(1, email);
+             stm.setString(2, phone);
+             stm.setString(3, address);
+             stm.setString(4, postal);
+             stm.setInt(5, pid);
+             
+             result=stm.executeUpdate();
+             
             Instant instant=Instant.now();
             long time=instant.getEpochSecond();
              
    
-           if(result.next() == false){
-                status="Faild";
-                mainObject1.accumulate("Status :", status);
-                mainObject1.accumulate("Timestamp :", time);
-                mainObject1.accumulate("Message :", " Fetching Failed");
-               
+           if(result<0){
+                status="ERROR";
+                mainObject1.accumulate("Status", status);
+                mainObject1.accumulate("Timestamp", time);               
                 }  
             
             else {
-                mainObject1.accumulate("Status :", "OK");
-                mainObject1.accumulate("Timestamp :", time);
-                do{
-                    jsonObject.accumulate("PID : ", result.getInt(1));
-                    jsonObject.accumulate("First Name : ", result.getString(2));
-                    jsonObject.accumulate("Last Name : ", result.getString(3));
-                    jsonObject.accumulate("email : ", result.getString(4));
-                    jsonObject.accumulate("Phone : ", result.getBigDecimal(5));
-                    jsonObject.accumulate("Address : ", result.getString(6));
-                    jsonObject.accumulate("Postal : ", result.getString(7));
-                    jsonArray.add(jsonObject);
-                    jsonObject.clear();
-                }while(result.next());
-                mainObject1.accumulate("Details of Perosns: ", jsonArray);
-                }  
-             stmt.close();
+                mainObject1.accumulate("Status", "OK");
+                mainObject1.accumulate("Timestamp", time);
+           }  
+             stm.close();
              con.close();
 
            
          } catch (SQLException ex) {
             Logger.getLogger(Persons.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return mainObject1;
+        return mainObject1.toString();
     
-    }
-    
-    @GET
-     @Path("personslist")
-    @Produces("application/json")
-        public String getListCountries() {   
-        JSONObject mainobject=new JSONObject();
-        mainobject=listPersons();
-        return mainobject.toString();
     }
 }
