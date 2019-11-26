@@ -49,7 +49,7 @@ public class Persons {
      */
     
 @GET
-    @Path("updateStudent&{email}&{phone}&{address}&{postal}&{id}")
+    @Path("updateStudent&{email}&{phone}&{address}&{postal}&{pid}")
     @Produces("text/plain")
 public String udatePersos(@PathParam("email") String email,
         @PathParam("phone") String phone,
@@ -67,7 +67,7 @@ public String udatePersos(@PathParam("email") String email,
             DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
             con=DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
            
-            String sql="update persons set email= ?, phone=?, address=?,postal=? where pid=?";
+            String sql="update persons set email=?, phone=?, address=?,postal=? where pid=?";
             stm=con.prepareStatement(sql);
              stm.setString(1, email);
              stm.setString(2, phone);
@@ -81,15 +81,14 @@ public String udatePersos(@PathParam("email") String email,
             long time=instant.getEpochSecond();
              
    
-           if(result<0){
-                status="ERROR";
-                mainObject1.accumulate("Status", status);
-                mainObject1.accumulate("Timestamp", time);               
+           if(result>0){
+               mainObject1.accumulate("Status", "OK");
+                mainObject1.accumulate("Timestamp", time);         
                 }  
             
             else {
-                mainObject1.accumulate("Status", "OK");
-                mainObject1.accumulate("Timestamp", time);
+                mainObject1.accumulate("Status", "ERROR");
+                mainObject1.accumulate("Timestamp", time);    
            }  
              stm.close();
              con.close();

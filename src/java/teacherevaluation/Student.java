@@ -39,10 +39,7 @@ public class Student {
         Instant instant = Instant.now();
         long time = instant.getEpochSecond();
         JSONObject singleEmployee = new JSONObject();
-        singleEmployee.accumulate("Status", "Error");
-        
-        singleEmployee.accumulate("Message", "Student id not exists");        
-        try {
+                try {
             Class.forName("oracle.jdbc.OracleDriver");
             Connection con = DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
             Statement stm = con.createStatement();
@@ -64,9 +61,9 @@ public class Student {
             
             else {
                 do{
-                  singleEmployee.accumulate("Status", "OK");
-                    singleEmployee.accumulate("Timestamp :", time);
-                     id = rs.getInt("pid");
+                singleEmployee.accumulate("Status", "OK");
+                singleEmployee.accumulate("Timestamp :", time);
+                id = rs.getInt("pid");
                 fname = rs.getString("fname");
                 lname = rs.getString("lname");
                 email = rs.getString("email");
