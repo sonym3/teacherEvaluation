@@ -35,10 +35,10 @@ public class Crendentials {
      * Creates a new instance of GenericResource
      */
     
-@GET
+    @GET
     @Path("validate&{username}")
-    @Produces("text/plain")
-public String udatePersos(@PathParam("username") int username){
+    @Produces("application/json")
+public String getCrentials(@PathParam("username") int username){
    
         Connection con=null;
         JSONObject mainObject1=new JSONObject();
@@ -77,6 +77,51 @@ public String udatePersos(@PathParam("username") int username){
             Logger.getLogger(Crendentials.class.getName()).log(Level.SEVERE, null, ex);
         }
         return mainObject1.toString();
+    
+    }
+
+@GET
+    @Path("updatePassword&{username}&{password}")
+    @Produces("application/json")
+public String updatePassword(@PathParam("username") int username,
+        @PathParam("password") String password){
+   
+        Connection con=null;
+       PreparedStatement stmx=null;
+        JSONObject singleObject=new JSONObject();
+        int result = 0;
+        
+        try{
+            DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
+            con=DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
+           
+            String sql="update CREDENTIALS set password=? where username=?";
+            stmx=con.prepareStatement(sql);
+             stmx.setString(1, password);
+             stmx.setInt(2, username);
+             result=stmx.executeUpdate();
+             
+            Instant instant=Instant.now();
+            long time=instant.getEpochSecond();
+             
+   
+           if(result>0){
+               singleObject.accumulate("Status", "OK");
+                singleObject.accumulate("Timestamp", time);         
+                }  
+            
+            else {
+                singleObject.accumulate("Status", "ERROR");
+                singleObject.accumulate("Timestamp", time);    
+           }  
+             stmx.close();
+             con.close();
+
+           
+         } catch (SQLException ex) {
+            Logger.getLogger(Crendentials.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return singleObject.toString();
     
     }
 }

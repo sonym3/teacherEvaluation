@@ -67,8 +67,8 @@ public String udatePersos(@PathParam("email") String email,
             DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
             con=DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
            
-            String sql="update persons set email=?, phone=?, address=?,postal=? where pid=?";
-            stm=con.prepareStatement(sql);
+             String sql="update persons set email=?, phone=?, address=?,postal=? where pid=?";
+             stm=con.prepareStatement(sql);
              stm.setString(1, email);
              stm.setString(2, phone);
              stm.setString(3, address);

@@ -33,6 +33,7 @@ public class ApplicationConfig extends Application {
         resources.add(teacherevaluation.Persons.class);
         resources.add(teacherevaluation.Rating.class);
         resources.add(teacherevaluation.Student.class);
+        resources.add(teacherevaluation.StudentSubject.class);
         resources.add(teacherevaluation.Subject.class);
         resources.add(teacherevaluation.Teacher.class);
 
