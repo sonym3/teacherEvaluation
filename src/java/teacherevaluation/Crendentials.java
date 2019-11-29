@@ -47,29 +47,29 @@ public String getCrentials(@PathParam("username") int username){
         try{
             DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
             con=DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
-             Statement stm = con.createStatement();
-            String sql="select username,password from credentials where username="+username;
-            ResultSet result = stm.executeQuery(sql);
-            Instant instant=Instant.now();
-            long time=instant.getEpochSecond();
-           if(result.next() == false){
-   
-                   status="ERROR";
-                mainObject1.accumulate("Status", status);
-                mainObject1.accumulate("Timestamp", time);      
-                }  
-            
-            else {
-               do{
-                  status="OK";   
+            try (Statement stm = con.createStatement()) {
+                String sql="select username,password from credentials where username="+username;
+                ResultSet result = stm.executeQuery(sql);
+                Instant instant=Instant.now();
+                long time=instant.getEpochSecond();
+                if(result.next() == false){
+                    
+                    status="ERROR";   
                     mainObject1.accumulate("Status", status);
                     mainObject1.accumulate("Timestamp", time);
-                    mainObject1.accumulate("username", result.getString("username"));
-                    mainObject1.accumulate("password",result.getString("password"));
-                  }while(result.next());     
+                }     
                 
-                }  
-             stm.close();
+                else {
+                    do{
+                        status="OK";
+                        mainObject1.accumulate("Status", status);
+                        mainObject1.accumulate("Timestamp", time);
+                        mainObject1.accumulate("username", result.getString("username"));
+                        mainObject1.accumulate("password",result.getString("password"));
+                    }while(result.next());
+                    
+                }
+            }
              con.close();
 
            

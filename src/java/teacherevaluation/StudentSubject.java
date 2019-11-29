@@ -46,10 +46,12 @@ JSONObject mainJSONObject = new JSONObject();
             DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
             con=DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
             try (Statement stm = con.createStatement()) {
-                String sql="select sids,subject.SNAME from stusub \n" +
-                        "join student on student.PID=stusub.PIDS\n" +
-                        "join subject on stusub.SIDS=subject.SID\n" +
-                        "where student.PID="+pids;
+                String sql="select sids,subject.SNAME,teacher.PID,persons.fname,persons.lname from stusub \n" +
+"join student on student.PID=stusub.PIDS\n" +
+"join subject on stusub.SIDS=subject.SID\n" +
+"join teacher on teacher.PID=subject.PIDT\n" +
+"join persons on teacher.pid=persons.pid\n" +
+"where student.PID="+pids;
                 ResultSet result = stm.executeQuery(sql);
                 
                 Instant instant=Instant.now();
@@ -68,13 +70,16 @@ JSONObject mainJSONObject = new JSONObject();
                        mainJSONObject.clear();
                         mainJSONObject.accumulate("Status", "OK");
                         mainJSONObject.accumulate("Timestamp", time);
-                        flag=1;
                             secondObject.accumulate("subject_id", result.getInt(1));
                             secondObject.accumulate("subject_name", result.getString(2));
+                            secondObject.accumulate("teacher_id", result.getInt(3));
+                            secondObject.accumulate("teacher_fname", result.getString(4));
+                            secondObject.accumulate("teacher_lname", result.getString(5));
+
                             array.add(secondObject);
                             secondObject.clear();
                     }
-                    mainJSONObject.accumulate("Details of Subject", array);
+                    mainJSONObject.accumulate("Details of subject and teacher", array);
             }
              con.close();
 
