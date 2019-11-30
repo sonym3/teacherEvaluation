@@ -40,7 +40,6 @@ public String getSubject(@PathParam("pids") int pids)
        {
    
         Connection con=null;
-int flag=1;
 JSONObject mainJSONObject = new JSONObject();        
         try{
             DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
@@ -80,10 +79,10 @@ JSONObject mainJSONObject = new JSONObject();
                             secondObject.clear();
                     }
                     mainJSONObject.accumulate("Details of subject and teacher", array);
+                    
             }
-             con.close();
-
-           
+            
+                con.close();           
          } catch (SQLException ex) {
             Logger.getLogger(Rating.class.getName()).log(Level.SEVERE, null, ex);
         }
