@@ -95,52 +95,59 @@ public String insertRating(@PathParam("pids") int pids,@PathParam("sids") int si
     }
 
 
-@Path("viewData&{sids}")
+@Path("viewData&{sids1}&{sids2}")
     @GET
     @Produces("text/plain")
-    public String getText(@PathParam("sids") int sids) {
-        //TODO return proper representation object
-        Instant instant = Instant.now();
-        long time = instant.getEpochSecond();
-        JSONObject jsonObject = new JSONObject();
-        PreparedStatement stmx=null;
+    public String getText4(@PathParam("sids1") int sids1,
+            @PathParam("sids2") int sids2) {
+        JSONObject firstOne = new JSONObject();
+            JSONObject secondOne = new JSONObject();
+                        JSONArray jsonArray=new JSONArray();
+try{
+    
+            DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
+    Connection con = DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
+           
+            String sql="select sids,round(avg(rating),2) from RATING\n" +
+"where sids between ? and ?\n" +
+"group by sids";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, sids1);
+            stmt.setInt(2, sids2);
 
-        try {
-            Class.forName("oracle.jdbc.OracleDriver");
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@144.217.163.57:1521:XE", "mad312team5", "anypw");
+            ResultSet result=stmt.executeQuery();
             
-            Statement stm = con.createStatement();
+            Instant instant=Instant.now();
+            long time=instant.getEpochSecond();
             
-            String sql = "select round(avg(rating),2) from RATING\n" +
-"where sids=? order by pidt";
-            stmx=con.prepareStatement(sql);
-            stmx.setInt(1, sids);   
-            ResultSet rs = stm.executeQuery(sql);
-
-              if(rs.next() == false){
-                 jsonObject.accumulate("Status", "ERROR");
-                jsonObject.accumulate("Timestamp", time);   
-              
+   
+           if(result.next() == false){
+                firstOne.accumulate("Status", "ERROR");
+                firstOne.accumulate("Timestamp", time);               
                 }  
-            else {
-                
-                  jsonObject.accumulate("Status", "OK");
-                  jsonObject.accumulate("Timestamp :", time);
-                  jsonObject.accumulate("ratedb", rs.getString(1));
-              }
-                rs.close();
-                stm.close();
-                con.close();
-                
-              //  singleEmployee.clear();
-               
             
+            else {
+                firstOne.accumulate("Status", "OK");
+                firstOne.accumulate("Timestamp", time);
+                do{
+                    secondOne.accumulate("subject: ", result.getInt(1));
+                    secondOne.accumulate("rating", result.getFloat(2));
+                    jsonArray.add(secondOne);
+                    secondOne.clear();
+                }while(result.next());
+                firstOne.accumulate("Details", jsonArray);
+                }  
+             
+             
+             
+             stmt.close();
+             con.close();
 
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(Student.class.getName()).log(Level.SEVERE, null, ex);
+         } catch (SQLException ex) {
+            Logger.getLogger(Rating.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return jsonObject.toString();
+           return firstOne.toString();
+
     }
 }
+      
